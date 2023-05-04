@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Portifolio {
+  id               String  @id @default(uuid())
+  coin             String
+  subTotal         Float?
+  totalPriceActual Float?
+  percent          Float?
+  assets           Asset[]
+}
+
+model Asset {
+  id           String      @id @default(uuid())
+  price        Float
+  quanty       Int
+  Portifolio   Portifolio? @relation(fields: [portifolioId], references: [id])
+  portifolioId String?
+}
