@@ -16,6 +16,7 @@ export class PortifolioService {
         data: {
           coin: data.coin,
           name: data.name,
+          subTotal: this.calculeSubTotal(data.assets),
           assets: {
             create: [
               ...data.assets.map((value: CreateAssetDto) => {
@@ -39,22 +40,44 @@ export class PortifolioService {
   }
 
   async findAll() {
-    return await this.prisma.portifolio.findMany({
-      include: {
-        assets: true
+    try {
+      const portifolios = await this.prisma.portifolio.findMany({
+        include: {
+          assets: true
+        }
+      });
+
+      const result = [];
+      for (const portifolio of portifolios) {
+        const preparedPortifolio = await this.preparePortifolioToSend(portifolio);
+        result.push(preparedPortifolio);
       }
-    });
+
+      return result;
+
+    } catch (error) {
+
+    }
   }
 
   async findOne(id: string) {
-    return await this.prisma.portifolio.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        assets: true
-      }
-    });
+    try {
+      let portifolio;
+      portifolio = await this.prisma.portifolio.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          assets: true
+        }
+      }).then((result) => portifolio = result);
+
+      return this.preparePortifolioToSend(portifolio);
+
+    } catch (error) {
+      throw new InternalServerErrorException({ message: "Erro ao buscar registro Portifolio." });
+    }
+
   }
 
   async update(id: string, data: UpdatePortifolioDto) {
@@ -94,4 +117,37 @@ export class PortifolioService {
 
 
   }
+
+  async preparePortifolioToSend(portifolio: any) {
+
+    let coin;
+    await fetch('https://api.binance.com/api/v3/ticker/price?symbol=' + portifolio.coin)
+      .then((response) => response.json())
+      .then((json) => coin = json);
+
+    let totalUpdated = 0;
+    if (portifolio.assets && portifolio.assets.length > 0) {
+      portifolio.assets.map((value) => {
+        totalUpdated += +value.quanty * +coin.price;
+      });
+    }
+
+    portifolio.totalPriceActual = totalUpdated;
+    portifolio.percent = this.calculePercentBeforeOfSend(portifolio.subTotal, totalUpdated);
+
+    return portifolio;
+  }
+
+  calculePercentBeforeOfSend(subTotal: number, totalPriceActual: number) {
+    return ((subTotal - totalPriceActual) / totalPriceActual) * 100;
+  }
+
+  calculeSubTotal(list: CreateAssetDto[]): number {
+    let subTotal = 0;
+
+    list.map((x) => subTotal += x.price * x.quanty);
+
+    return subTotal;
+  }
+
 }
