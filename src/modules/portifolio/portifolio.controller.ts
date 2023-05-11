@@ -5,7 +5,7 @@ import { UpdatePortifolioDto } from './dto/update-portifolio.dto';
 
 @Controller('portifolio')
 export class PortifolioController {
-  constructor(private readonly portifolioService: PortifolioService) {}
+  constructor(private readonly portifolioService: PortifolioService) { }
 
   @Post()
   create(@Body() createPortifolioDto: CreatePortifolioDto) {
@@ -19,16 +19,16 @@ export class PortifolioController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.portifolioService.findOne(+id);
+    return this.portifolioService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePortifolioDto: UpdatePortifolioDto) {
-    return this.portifolioService.update(+id, updatePortifolioDto);
+    return this.portifolioService.update(id, updatePortifolioDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.portifolioService.remove(+id);
+    return this.portifolioService.remove(id);
   }
 }

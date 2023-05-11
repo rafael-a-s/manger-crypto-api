@@ -28,27 +28,70 @@ export class PortifolioService {
               })
             ]
           }
+        },
+        include: {
+          assets: true
         }
       });
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException({ message: "Erro ao cadastrar Portifolio." });
     }
   }
 
-  findAll() {
-    return `This action returns all portifolio`;
+  async findAll() {
+    return await this.prisma.portifolio.findMany({
+      include: {
+        assets: true
+      }
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} portifolio`;
+  async findOne(id: string) {
+    return await this.prisma.portifolio.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        assets: true
+      }
+    });
   }
 
-  update(id: number, updatePortifolioDto: UpdatePortifolioDto) {
-    return `This action updates a #${id} portifolio`;
+  update(id: string, data: UpdatePortifolioDto) {
+    try {
+      return this.prisma.portifolio.update({
+        where: {
+          id: id
+        },
+        data: {
+          name: data.name,
+        },
+        include: {
+          assets: true
+        }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException({ message: "Erro ao atualizar seu Portifolio." });
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} portifolio`;
+  async remove(id: string) {
+    try {
+      await this.prisma.asset.deleteMany({
+        where: {
+          portifolioId: id
+        }
+      });
+
+      await this.prisma.portifolio.delete({
+        where: {
+          id: id
+        }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException({ message: "Erro ao excluir seu Portifolio." });
+    }
+
+
   }
 }
