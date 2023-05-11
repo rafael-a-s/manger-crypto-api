@@ -57,9 +57,9 @@ export class PortifolioService {
     });
   }
 
-  update(id: string, data: UpdatePortifolioDto) {
+  async update(id: string, data: UpdatePortifolioDto) {
     try {
-      return this.prisma.portifolio.update({
+      return await this.prisma.portifolio.update({
         where: {
           id: id
         },
