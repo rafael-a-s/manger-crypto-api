@@ -1,10 +1,11 @@
-import { Asset } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-export class Portifolio {
-    id: string;
+export class Portifolio implements Prisma.PortifolioUncheckedCreateInput {
+    id?: string;
+    name: string;
     coin: string;
-    subTotal: Float32Array;
-    totalPriceActual: Float32Array;
-    percent: Float32Array;
-    assets: Asset[];
+    subTotal?: number;
+    totalPriceActual?: number;
+    percent?: number;
+    assets?: Prisma.AssetUncheckedCreateNestedManyWithoutPortifolioInput;
 }

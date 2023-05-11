@@ -1,8 +1,9 @@
-import { Portifolio } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-export class Asset {
-    id: String;
-    price: Float32Array
-    quanty: Int32Array;
-    Portifolio: Portifolio;
+export class Asset implements Prisma.AssetUncheckedCreateInput {
+    id?: string;
+    price: number;
+    symbol: string;
+    quanty: number;
+    portifolioId?: string;
 }

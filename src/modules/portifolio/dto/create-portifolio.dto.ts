@@ -1,10 +1,19 @@
-import { Asset } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { IsString, ValidateNested } from "class-validator";
+import { Portifolio } from "../entities/portifolio.entity";
+import { CreateAssetDto } from "src/modules/asset/dto/CreateAssetDto";
+import { Type } from "class-transformer";
 
 export class CreatePortifolioDto {
-    id: string;
+
+    @IsString()
+    name: string;
+
+    @IsString()
     coin: string;
-    subTotal?: Float32Array;
-    totalPriceActual?: Float32Array;
-    percent?: Float32Array;
-    assets: Asset[];
+
+    @ValidateNested({ each: true })
+    @Type(() => CreateAssetDto)
+    assets?: CreateAssetDto[];
+
 }

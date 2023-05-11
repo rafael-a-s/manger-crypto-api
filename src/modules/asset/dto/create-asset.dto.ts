@@ -1,8 +1,13 @@
-import { Portifolio } from "@prisma/client";
+import { IsDecimal, IsInt, IsNumber, IsString, isNumber } from "class-validator";
 
 export class CreateAssetDto {
-    id: String;
-    price: Float32Array
-    quanty: Int32Array;
-    Portifolio: Portifolio;
+
+    @IsNumber()
+    price: number;
+
+    @IsString()
+    symbol: string;
+
+    @IsInt()
+    quanty: number;
 }
