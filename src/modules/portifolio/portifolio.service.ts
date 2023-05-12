@@ -80,6 +80,28 @@ export class PortifolioService {
 
   }
 
+  async addAssetPortifolio(id: string, data:CreateAssetDto) {
+    try {
+      return await this.prisma.portifolio.update({
+        where: {
+          id: id
+        },
+        data: {
+          assets: {
+            create: [
+              data
+            ]
+          }
+        },
+        include: {
+          assets: true
+        }
+      });
+    } catch (error) {
+      throw new InternalServerErrorException({ message: "Erro ao adicionar um ativo no seu Portifolio." });
+    }
+  }
+
   async update(id: string, data: UpdatePortifolioDto) {
     try {
       return await this.prisma.portifolio.update({

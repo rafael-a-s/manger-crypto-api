@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { PortifolioService } from './portifolio.service';
 import { CreatePortifolioDto } from './dto/create-portifolio.dto';
 import { UpdatePortifolioDto } from './dto/update-portifolio.dto';
+import { CreateAssetDto } from '../asset/dto/CreateAssetDto';
 
 @Controller('portifolio')
 export class PortifolioController {
@@ -10,6 +11,11 @@ export class PortifolioController {
   @Post()
   create(@Body() createPortifolioDto: CreatePortifolioDto) {
     return this.portifolioService.create(createPortifolioDto);
+  }
+
+  @Patch('/addactive/:id')
+  addAssetPortifolio(@Param('id') id:string, @Body() dto: CreateAssetDto) {
+    return this.portifolioService.addAssetPortifolio(id, dto);
   }
 
   @Get()
