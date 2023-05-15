@@ -19,6 +19,10 @@ export class AssetService {
     });
   }
 
+  async findAllRecents() {
+    return await this.prisma.asset.findMany({})
+  }
+
   findAll() {
     return `This action returns all asset`;
   }
