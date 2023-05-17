@@ -20,7 +20,11 @@ export class AssetService {
   }
 
   async findAllRecents() {
-    return await this.prisma.asset.findMany({})
+    return await this.prisma.asset.findMany({
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
   }
 
   findAll() {

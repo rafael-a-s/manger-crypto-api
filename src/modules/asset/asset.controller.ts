@@ -17,6 +17,11 @@ export class AssetController {
     return this.assetService.findAll();
   }
 
+  @Get('/recents')
+  async findAllRecents() {
+    return await this.assetService.findAllRecents();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.assetService.findOne(+id);
