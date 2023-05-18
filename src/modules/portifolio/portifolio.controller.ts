@@ -13,8 +13,8 @@ export class PortifolioController {
     return this.portifolioService.create(createPortifolioDto);
   }
 
-  @Patch('/addactive/:id')
-  addAssetPortifolio(@Param('id') id:string, @Body() dto: CreateAssetDto) {
+  @Patch('/add-asset/:id')
+  addAssetPortifolio(@Param('id') id: string, @Body() dto: CreateAssetDto) {
     return this.portifolioService.addAssetPortifolio(id, dto);
   }
 

@@ -80,7 +80,7 @@ export class PortifolioService {
 
   }
 
-  async addAssetPortifolio(id: string, data:CreateAssetDto) {
+  async addAssetPortifolio(id: string, data: CreateAssetDto) {
     try {
       return await this.prisma.portifolio.update({
         where: {
@@ -89,7 +89,11 @@ export class PortifolioService {
         data: {
           assets: {
             create: [
-              data
+              {
+                price: +data.price,
+                symbol: data.symbol,
+                quanty: +data.quanty,
+              }
             ]
           }
         },
