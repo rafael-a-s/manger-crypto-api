@@ -19,7 +19,7 @@ export class PortifolioService {
         data: {
           coin: data.coin,
           name: data.name,
-          subTotal: this.calculeSubTotal(data.assets),
+          subTotal: await this.calculeSubTotal('', data.assets),
           assets: {
             create: [
               ...data.assets.map((value: CreateAssetDto) => {
@@ -83,6 +83,23 @@ export class PortifolioService {
 
   }
 
+  async findOneUnrelated(id: string) {
+    try {
+      let portifolio;
+      portifolio = await this.prisma.portifolio.findUnique({
+        where: {
+          id: id,
+        }
+      }).then((result) => portifolio = result);
+
+      return this.preparePortifolioToSend(portifolio);
+
+    } catch (error) {
+      throw new InternalServerErrorException({ message: "Erro ao buscar registro Portifolio." });
+    }
+
+  }
+
   async addAssetPortifolio(id: string, data: CreateAssetDto) {
     try {
       let portifolio = await this.prisma.portifolio.update({
@@ -90,6 +107,7 @@ export class PortifolioService {
           id: id
         },
         data: {
+          subTotal: await this.calculeSubTotal(id, [data]),
           assets: {
             create: [
               {
@@ -159,6 +177,11 @@ export class PortifolioService {
 
     let totalUpdated = this.calculateSubTotalWhenPricesUpdateds(coins, portifolios);
 
+    return {
+      total: total,
+      totalUpdated: totalUpdated,
+    };
+
   }
 
   async preparePortifolioToSend(portifolio: any) {
@@ -185,19 +208,25 @@ export class PortifolioService {
     return ((subTotal - totalPriceActual) / totalPriceActual) * 100;
   }
 
-  calculeSubTotal(list: CreateAssetDto[]): number {
-    let subTotal = 0;
+  async calculeSubTotal(id: string, list: CreateAssetDto[]): Promise<number> {
+    let total = 0;
+    let necessitePortifolio;
+    id.length > 0 ?
+    await this.findOneUnrelated(id)
+      .then((value) => necessitePortifolio = value)
+      .catch(() => necessitePortifolio = null)
+    : necessitePortifolio = null;
 
-    list.map((x) => subTotal += x.price * x.quanty);
+    list.map((x) => total += x.price * x.quanty);
 
-    return subTotal;
+    return necessitePortifolio ? necessitePortifolio.subTotal + total : total;
   }
 
   calculateSubTotalWhenPricesUpdateds(coins: Coin[], portifolios: any[]): number {
     let total = 0;
 
     portifolios.forEach((value) => {
-      let coin = coins.find(value.coin);
+      let coin = coins.find((coin) => coin.symbol === value.coin);
 
       value.assets.forEach((asset) => {
         total += (asset.quanty * coin.price);

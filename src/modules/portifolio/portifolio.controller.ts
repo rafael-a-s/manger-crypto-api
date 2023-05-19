@@ -18,6 +18,11 @@ export class PortifolioController {
     return this.portifolioService.addAssetPortifolio(id, dto);
   }
 
+  @Get('/infos-general')
+  findInfosGeneralOfPortifolios() {
+    return this.portifolioService.returnedInfosGeneralAboutPortifolios();
+  }
+
   @Get()
   findAll() {
     return this.portifolioService.findAll();
