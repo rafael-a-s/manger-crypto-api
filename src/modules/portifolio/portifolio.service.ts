@@ -4,11 +4,14 @@ import { UpdatePortifolioDto } from './dto/update-portifolio.dto';
 import { PrismaService } from 'src/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateAssetDto } from '../asset/dto/CreateAssetDto';
+import { CoinService } from '../coin/coin.service';
+import { Coin } from '../coin/entities/coin.entity';
 
 @Injectable()
 export class PortifolioService {
 
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService,
+    private readonly coinService: CoinService) { }
 
   async create(data: CreatePortifolioDto) {
     try {
@@ -147,6 +150,17 @@ export class PortifolioService {
 
   }
 
+  async returnedInfosGeneralAboutPortifolios() {
+    let portifolios = await this.findAll();
+    let coins = await this.coinService.findAllCoins();
+
+    let total = 0;
+    portifolios.forEach((portifolio) => total += portifolio.subTotal);
+
+    let totalUpdated = this.calculateSubTotalWhenPricesUpdateds(coins, portifolios);
+
+  }
+
   async preparePortifolioToSend(portifolio: any) {
 
     let coin;
@@ -177,6 +191,22 @@ export class PortifolioService {
     list.map((x) => subTotal += x.price * x.quanty);
 
     return subTotal;
+  }
+
+  calculateSubTotalWhenPricesUpdateds(coins: Coin[], portifolios: any[]): number {
+    let total = 0;
+
+    portifolios.forEach((value) => {
+      let coin = coins.find(value.coin);
+
+      value.assets.forEach((asset) => {
+        total += (asset.quanty * coin.price);
+
+      });
+
+    });
+
+    return total;
   }
 
 }
