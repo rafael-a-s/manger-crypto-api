@@ -177,9 +177,14 @@ export class PortifolioService {
 
     let totalUpdated = this.calculateSubTotalWhenPricesUpdateds(coins, portifolios);
 
+    let pnl = totalUpdated - total;
+
+    let percent = this.calculePercentBeforeOfSend(total, totalUpdated);
     return {
       total: total,
       totalUpdated: totalUpdated,
+      pnl: pnl,
+      percent: percent
     };
 
   }
@@ -205,7 +210,7 @@ export class PortifolioService {
   }
 
   calculePercentBeforeOfSend(subTotal: number, totalPriceActual: number) {
-    return ((subTotal - totalPriceActual) / totalPriceActual) * 100;
+    return ((subTotal - totalPriceActual) / subTotal) * 100;
   }
 
   async calculeSubTotal(id: string, list: CreateAssetDto[]): Promise<number> {
