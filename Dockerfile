@@ -4,7 +4,6 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Adicionar esta COPY instrução antes de executar npm installou copiar o código do aplicativo permite que você aproveite o mecanismo de cache do Docker
 COPY package*.json ./
 COPY ./prisma ./prisma
 
